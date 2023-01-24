@@ -1,6 +1,6 @@
 ---
 title: "P8451 Machine Learning in Public Health - Assignment 1"
-output: html_document
+output: github_document
 date: "2023-1-24"
 ---
 
@@ -103,7 +103,7 @@ classification_logistic %>%
   knitr::kable(col.names = c('Term', 'beta Estimate', 'Lower 95% CI', 'Upper 95% CI', "p-value"), digits = 3)
 ```
 
-The beta estimate associated with a 1-unit change in HOMA-IR is __0.274__. The 95% confidence interval surrounding this beta estimate is __(-0.063, 0.611)__. 
+The beta estimate associated with a 1-unit change in _HOMA-IR_ is __0.274__. The 95% confidence interval surrounding this beta estimate is __(-0.063, 0.611)__. 
 
 # Question 5
 
@@ -122,4 +122,4 @@ insulin_linear %>%
   knitr::kable(col.names = c('Term', 'beta Estimate', 'Lower 95% CI', 'Upper 95% CI', "p-value"), digits = 3)
 ```
 
-The beta estimate associated with a 1-unit change in age is __-0.054__. The 95% confidence interval surrounding this beta estimate is __(-0.156, 0.048)__. 
+The beta estimate associated with a 1-unit change in _age_ is __-0.054__. The 95% confidence interval surrounding this beta estimate is __(-0.156, 0.048)__. 
