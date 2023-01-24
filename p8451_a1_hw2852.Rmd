@@ -1,0 +1,82 @@
+---
+title: "P8451 Machine Learning in Public Health - Assignment 1"
+output: html_document
+date: "2023-1-24"
+---
+
+In preparation for the problems below, we will load the following libraries:
+
+```{r load_libraries}
+library(tidyverse)
+library(dplyr)
+library(psych)
+```
+
+# Question 1
+
+## 1.1 Data Import and Cleaning
+
+We will begin by importing the dataset used by authors Patricio et al for the development of a biomarker-based prediction model to identify women with breast cancer. To do so, we will first read in the data by using the `read_csv` function, then apply the `clean_names` function to quickly clean the data. 
+
+```{r}
+breast_cancer_data = 
+  read_csv("./bcdata_Assignment1.csv") %>% 
+  janitor::clean_names()
+```
+
+## 1.2 Tabulating Summaries of Quantitative Features
+
+To generate a table providing the summaries of the quantitative features of the dataset, we can apply the `describe` function, which generates a variety of summary statistics. From this output, we will select the following: mean, median, minimum value, and maximum value. 
+
+```{r}
+describe(breast_cancer_data) %>% 
+  select("mean", "median", "min", "max") %>% 
+  knitr::kable(col.names = c('Mean', 'Median', 'Minimum Value', 'Maximum Value'))
+```
+
+# Question 2 
+
+We will now recode the existing BMI variable into the following WHO-defined categories:
+
+ - Severely Underweight - BMI less than 16.5 kg/m^2
+ - Underweight - BMI under 18.5 kg/m^2
+ - Normal Weight - BMI greater than or equal to 18.5 to 24.9 kg/m^2
+ - Overweight – BMI greater than or equal to 25 to 29.9 kg/m^2
+ - Obesity Class I – BMI 30 to 34.9 kg/m^2
+ - Obesity Class II – BMI 35 to 39.9 kg/m^2
+ - Obesity Class III – BMI greater than or equal to 40 kg/m^2
+ 
+This process involves converting the existing `bmi` variable from a numeric to factor variable with 7 levels, using the `as.factor` function, as well as a series of `ifelse` statements. 
+ 
+```{r}
+breast_cancer_data$bmi <- as.factor(ifelse(breast_cancer_data$bmi < 16.5, 'Severely Underweight',
+                                    ifelse(breast_cancer_data$bmi < 18.5, 'Underweight', 
+                                    ifelse(breast_cancer_data$bmi < 25, 'Normal Weight',
+                                    ifelse(breast_cancer_data$bmi < 30, 'Overweight',
+                                    ifelse(breast_cancer_data$bmi < 35, 'Obesity Class I',
+                                    ifelse(breast_cancer_data$bmi < 40, 'Obesity Class II',
+                                    'Obesity Class III')))))))
+```
+
+# Question 3
+
+Using the dataset generated from Question 2, we can generate a bar chart depicting the proportion of breast cancer cases and controls within each BMI category. 
+
+```{r}
+breast_cancer_data %>% 
+  group_by(bmi) %>%
+  mutate(n = n(),
+         cases = sum(classification - 1),
+         prop_cases = cases / n) %>% 
+  ggplot(aes(x = reorder(bmi, prop_cases), fill = factor(classification))) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Proportions of Breast Cancer Cases & Controls within \nWHO-Defined BMI Categories", 
+    x = "BMI Categories", 
+    y = "Proportion", 
+    fill = "Classification") +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = "bottom") +
+  scale_fill_discrete(labels = c('Control', 'Case'))
+```
+
